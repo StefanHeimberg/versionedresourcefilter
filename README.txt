@@ -1,1 +1,1 @@
-# Versioned Resource Filter
+# Versioned Resource Servlet

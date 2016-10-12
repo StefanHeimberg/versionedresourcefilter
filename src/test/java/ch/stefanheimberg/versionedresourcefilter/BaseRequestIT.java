@@ -17,7 +17,7 @@ abstract class BaseRequestIT {
 
     private static final String BASE_REQUEST_URL = "http://localhost:8080/versionedresourcefilter/";
 
-    protected void assert_resource_found_and_mimetypecorrect(final String resourcePath, final String expectedMimeType, final long expectedSize) throws MalformedURLException, ProtocolException, IOException {
+    protected void assert_resource_found_and_mimetypecorrect(final String resourcePath, final String expectedMimeType) throws MalformedURLException, ProtocolException, IOException {
         final String versionedResourcePath = String.format(resourcePath, get_random_version());
         final URL url = new URL(BASE_REQUEST_URL + versionedResourcePath);
         
@@ -29,9 +29,17 @@ abstract class BaseRequestIT {
         
         final String contentType = con.getContentType();
         assertThat(versionedResourcePath, contentType, is(expectedMimeType));
+    }
+    
+    protected void assert_resource_not_found(final String resourcePath) throws MalformedURLException, ProtocolException, IOException {
+        final String versionedResourcePath = String.format(resourcePath, get_random_version());
+        final URL url = new URL(BASE_REQUEST_URL + versionedResourcePath);
         
-        long contentLengthLong = con.getContentLengthLong();
-        assertThat(versionedResourcePath, contentLengthLong, is(expectedSize));
+        final HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        
+        final int responseCode = con.getResponseCode();
+        assertThat(versionedResourcePath, responseCode, is(404));
     }
     
     protected String get_random_version() {

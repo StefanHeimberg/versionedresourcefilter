@@ -16,7 +16,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
 
 /**
  *
@@ -38,12 +37,12 @@ public class VersionedResourceServlet extends HttpServlet {
         final InputStream is = servletContext.getResourceAsStream(stripedPath);
 
         if (null == is) {
-            response.sendError(Response.Status.NOT_FOUND.getStatusCode());
+            response.sendError(404);
             LOGGER.log(Level.INFO, "-> resource not found!");
             return;
         }
 
-        response.setStatus(Response.Status.OK.getStatusCode());
+        response.setStatus(200);
         response.setContentType(servletContext.getMimeType(stripedPath));
 
         try (final ReadableByteChannel inputChannel = Channels.newChannel(is);
