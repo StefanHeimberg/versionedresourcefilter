@@ -1,15 +1,12 @@
 package ch.stefanheimberg.versionedresourceservlet;
 
+import static ch.stefanheimberg.versionedresourceservlet.ChannelHelper.fastChannelCopy;
+import static ch.stefanheimberg.versionedresourceservlet.VersionHelper.hasVersionInPath;
 import static ch.stefanheimberg.versionedresourceservlet.VersionHelper.stripVersionFromPath;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,57 +25,55 @@ public class VersionedResourceServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        final String path = request.getRequestURI().substring(request.getContextPath().length());
-        final String stripedPath = stripVersionFromPath(path);
-        LOGGER.log(Level.INFO, "-> path: {0}", path);
-        LOGGER.log(Level.INFO, "-> stripedPath: {0}", stripedPath);
-
         final ServletContext servletContext = request.getServletContext();
-        final InputStream is = servletContext.getResourceAsStream(stripedPath);
 
-        if (null == is) {
-            response.sendError(404);
-            LOGGER.log(Level.INFO, "-> resource not found!");
+        final String path = getPath(request);
+
+        // check if requested resource exists.
+        final InputStream pathIS = servletContext.getResourceAsStream(path);
+        if (null != pathIS) {
+            LOGGER.log(Level.INFO, "-> path: {0} [found]", path);
+            resourceFound(servletContext, response, path, pathIS);
             return;
+        } else {
+            LOGGER.log(Level.INFO, "-> path: {0} [not found]", path);
         }
 
+        if (hasVersionInPath(path)) {
+            // path not found. try to strip version from path
+            final String stripedPath = stripVersionFromPath(path);
+
+            // check if resource for striped path exists
+            final InputStream stripedPathIS = servletContext.getResourceAsStream(stripedPath);
+            if (null != stripedPathIS) {
+                LOGGER.log(Level.INFO, "--> stripedPath: {0} [found]", stripedPath);
+                resourceFound(servletContext, response, stripedPath, stripedPathIS);
+                return;
+            } else {
+                LOGGER.log(Level.INFO, "--> stripedPath: {0} [not found]", stripedPath);
+            }
+        }
+
+        resourceNotFound(response);
+    }
+
+    private String getPath(final HttpServletRequest request) {
+        return request.getRequestURI().substring(request.getContextPath().length());
+    }
+
+    private void resourceFound(final ServletContext servletContext, final HttpServletResponse response, final String path, final InputStream pathIS) throws IOException {
         response.setStatus(200);
-        response.setContentType(servletContext.getMimeType(stripedPath));
 
-        try (final ReadableByteChannel inputChannel = Channels.newChannel(is);
-                final WritableByteChannel outputChannel = Channels.newChannel(response.getOutputStream())) {
-            fastChannelCopy(inputChannel, outputChannel);
+        final String contentType = servletContext.getMimeType(path);
+        if (null != contentType) {
+            response.setContentType(contentType);
         }
+        
+        fastChannelCopy(pathIS, response.getOutputStream());
     }
 
-    public static void fastChannelCopy(final ReadableByteChannel src, final WritableByteChannel dest) throws IOException {
-        // https://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
-        while (src.read(buffer) != -1) {
-            // prepare the buffer to be drained
-            buffer.flip();
-            // write to the channel, may block
-            dest.write(buffer);
-            // If partial transfer, shift remainder down
-            // If buffer is empty, same as doing clear()
-            buffer.compact();
-        }
-        // EOF will leave buffer in fill state
-        buffer.flip();
-        // make sure the buffer is fully drained.
-        while (buffer.hasRemaining()) {
-            dest.write(buffer);
-        }
-    }
-
-    @Override
-    public void init(final ServletConfig servletConfig) throws ServletException {
-        LOGGER.info("initialized");
-    }
-
-    @Override
-    public void destroy() {
-        LOGGER.info("destroyed");
+    private void resourceNotFound(final HttpServletResponse response) throws IOException {
+        response.sendError(404);
     }
 
 }

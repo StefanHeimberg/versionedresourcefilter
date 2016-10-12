@@ -10,19 +10,33 @@ import java.util.regex.Pattern;
  */
 public final class VersionHelper {
     
-    private static final Logger LOGGER = Logger.getLogger(VersionHelper.class.getSimpleName());
+    private static String PATH_SEPARATOR = "/";
     
     // http://java-regex-tester.appspot.com/
-    private static final String VERSION_PATTERN = "/\\d+.\\d+.\\d+/";
+    private static final String DEFAULT_VERSION_PATTERN = "\\d+.\\d+.\\d+";
     
-    public static final String stripVersionFromPath(final String versionedPath) {
-        final Pattern p = Pattern.compile(VERSION_PATTERN);
-        final Matcher m = p.matcher(versionedPath);
-        if(m.find()) {
-            LOGGER.info("-> request uri has version number. removing version");
-            return m.replaceAll("/");
+    public static final boolean hasVersionInPath(final String path) {
+        return hasVersionInPath(path, DEFAULT_VERSION_PATTERN);
+    }
+    
+    public static final boolean hasVersionInPath(final String path, final String versionPattern) {
+        return Pattern.compile(PATH_SEPARATOR + versionPattern + PATH_SEPARATOR)
+                .matcher(path)
+                .find();
+    }
+    
+    public static final String stripVersionFromPath(final String path) {
+        return stripVersionFromPath(path, DEFAULT_VERSION_PATTERN);
+    }
+    
+    public static final String stripVersionFromPath(final String path, final String versionPattern) {
+        if(hasVersionInPath(path)) {
+            return path.replaceAll(PATH_SEPARATOR + versionPattern + PATH_SEPARATOR, PATH_SEPARATOR);
         }
-        return versionedPath;
+        return path;
+    }
+
+    private VersionHelper() {
     }
     
 }

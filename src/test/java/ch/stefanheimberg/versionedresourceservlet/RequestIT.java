@@ -34,6 +34,12 @@ public class RequestIT extends BaseRequestIT {
     }
 
     @Test
+    public void test_css2() throws MalformedURLException, ProtocolException, IOException {
+        assert_resource_not_found("css/test2.css");
+        assert_resource_found_and_mimetypecorrect("css/1.2.3/test2.css", "text/css");
+    }
+
+    @Test
     public void test_js() throws MalformedURLException, ProtocolException, IOException {
         assert_resource_found_and_mimetypecorrect("js/test.js", "application/javascript");
         assert_resource_found_and_mimetypecorrect("js/%s/test.js", "application/javascript");
