@@ -60,7 +60,7 @@
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <version>1.0.2.Final</version>
+                <version>1.1.0.Alpha4</version>
                 <executions>
                     <execution>
                         <id>start-wildfly</id>
