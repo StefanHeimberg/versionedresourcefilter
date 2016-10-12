@@ -1,4 +1,4 @@
-package ch.stefanheimberg.versionedresourcefilter;
+package ch.stefanheimberg.versionedresourceservlet;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
  */
 abstract class BaseRequestIT {
 
-    private static final String BASE_REQUEST_URL = "http://localhost:8080/versionedresourcefilter/";
+    private static final String BASE_REQUEST_URL = "http://localhost:8080/versionedresourceservlet/";
 
     protected void assert_resource_found_and_mimetypecorrect(final String resourcePath, final String expectedMimeType) throws MalformedURLException, ProtocolException, IOException {
         final String versionedResourcePath = String.format(resourcePath, get_random_version());

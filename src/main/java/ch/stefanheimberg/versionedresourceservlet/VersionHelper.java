@@ -1,4 +1,4 @@
-package ch.stefanheimberg.versionedresourcefilter;
+package ch.stefanheimberg.versionedresourceservlet;
 
 import java.util.logging.Logger;
 import java.util.regex.Matcher;

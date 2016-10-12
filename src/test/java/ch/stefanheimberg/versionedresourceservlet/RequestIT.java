@@ -1,4 +1,4 @@
-package ch.stefanheimberg.versionedresourcefilter;
+package ch.stefanheimberg.versionedresourceservlet;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

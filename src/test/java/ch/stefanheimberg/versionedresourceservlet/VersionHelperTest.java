@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.stefanheimberg.versionedresourcefilter;
+package ch.stefanheimberg.versionedresourceservlet;
 
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static ch.stefanheimberg.versionedresourcefilter.VersionHelper.stripVersionFromPath;
+import static ch.stefanheimberg.versionedresourceservlet.VersionHelper.stripVersionFromPath;
 
 /**
  *

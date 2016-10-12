@@ -1,6 +1,6 @@
-package ch.stefanheimberg.versionedresourcefilter;
+package ch.stefanheimberg.versionedresourceservlet;
 
-import static ch.stefanheimberg.versionedresourcefilter.VersionHelper.stripVersionFromPath;
+import static ch.stefanheimberg.versionedresourceservlet.VersionHelper.stripVersionFromPath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
