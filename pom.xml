@@ -68,9 +68,6 @@
                         <goals>
                             <goal>start</goal>
                         </goals>
-                        <configuration>
-                            <skip>${skipSTs}</skip>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>deploy-application</id>
@@ -78,9 +75,6 @@
                         <goals>
                             <goal>deploy</goal>
                         </goals>
-                        <configuration>
-                            <skip>${skipSTs}</skip>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>shutdown-wildfly</id>
@@ -88,9 +82,6 @@
                         <goals>
                             <goal>shutdown</goal>
                         </goals>
-                        <configuration>
-                            <skip>${skipSTs}</skip>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
